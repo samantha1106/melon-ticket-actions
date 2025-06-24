@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '*/30 * * * *'  # 每30分鐘執行一次，你可以調整
+    - cron: '*/5 * * * *'  # 每30分鐘執行一次，你可以調整
 
 jobs:
   check-ticket:
