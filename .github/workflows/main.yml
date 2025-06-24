@@ -19,4 +19,8 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: npx semantic-release
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        MELON_ID: ${{ secrets.MELON_ID }}
+        MELON_PASSWORD: ${{ secrets.MELON_PASSWORD }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        PROD_ID: '211212'       # 你要監控的演出ID
+        # 你也可以根據需要新增 TARGET_DATE、TARGET_TIME 等環境變數
