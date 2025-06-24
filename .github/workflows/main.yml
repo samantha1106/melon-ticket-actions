@@ -1,26 +1,31 @@
-name: workflow
-on: push
+name: melon-ticket-check
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '*/30 * * * *'  # 每30分鐘執行一次，你可以調整
+
 jobs:
-  job:
+  check-ticket:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v1
-      - name: Prepare
-        run: npm ci
-      - name: Lint
-        uses: mooyoul/tslint-actions@master
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pattern: '*.ts'
-      - name: Build
-        run: npm run build
-      - name: Publish
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: npx semantic-release
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Melon Ticket Checker
+        run: node index.js
         env:
-        MELON_ID: ${{ secrets.MELON_ID }}
-        MELON_PASSWORD: ${{ secrets.MELON_PASSWORD }}
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        PROD_ID: '211212'       # 你要監控的演出ID
-        # 你也可以根據需要新增 TARGET_DATE、TARGET_TIME 等環境變數
+          PRODUCT_ID: ${{ secrets.PRODUCT_ID }}
+          SCHEDULE_ID: ${{ secrets.SCHEDULE_ID }}
+          SEAT_ID: ${{ secrets.SEAT_ID }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
