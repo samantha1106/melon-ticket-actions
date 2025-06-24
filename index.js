@@ -1,60 +1,47 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = require("@actions/core");
 const axios = require("axios");
 const qs = require("querystring");
 
 (async () => {
-    // 從 GitHub Actions inputs 取得參數
-    const [productId, scheduleId, seatId, discordWebhookUrl] = [
-        "product-id",
-        "schedule-id",
-        "seat-id",
-        "discord-webhook-url",
-    ].map((name) => {
-        const value = core.getInput(name);
-        if (!value) {
-            throw new Error(`melon-ticket-actions: Please set ${name} input parameter`);
-        }
-        return value;
-    });
+  const productId = process.env.PRODUCT_ID;
+  const scheduleId = process.env.SCHEDULE_ID;
+  const seatId = process.env.SEAT_ID;
+  const discordWebhookUrl = process.env.DISCORD_WEBHOOK;
+  const message = "Melon Ticket available!";
 
-    const message = core.getInput("message") || "Melon Ticket available!";
+  if (!productId || !scheduleId || !seatId || !discordWebhookUrl) {
+    throw new Error("請確認所有必要環境變數都有設定");
+  }
 
-    // 呼叫 Melon API 取得票務狀態
-    const res = await axios({
-        method: "POST",
-        url: "https://ticket.melon.com/tktapi/product/seatStateInfo.json",
-        params: {
-            v: "1",
-        },
-        data: qs.stringify({
-            prodId: productId,
-            scheduleNo: scheduleId,
-            seatId,
-            volume: 1,
-            selectedGradeVolume: 1,
-        }),
-    });
+  const res = await axios({
+    method: "POST",
+    url: "https://ticket.melon.com/tktapi/product/seatStateInfo.json",
+    params: { v: "1" },
+    data: qs.stringify({
+      prodId: productId,
+      scheduleNo: scheduleId,
+      seatId,
+      volume: 1,
+      selectedGradeVolume: 1,
+    }),
+  });
 
-    console.log("Got response: ", res.data);
+  console.log("Got response: ", res.data);
 
-    if (res.data.chkResult) {
-        const link = `http://ticket.melon.com/performance/index.htm?${qs.stringify({
-            prodId: productId,
-        })}`;
+  if (res.data.chkResult) {
+    const link = `http://ticket.melon.com/performance/index.htm?${qs.stringify({
+      prodId: productId,
+    })}`;
 
-        // 發送 Discord Webhook
-        try {
-            await axios.post(discordWebhookUrl, {
-                content: `${message} ${link}`,
-            });
-            console.log("Discord notification sent.");
-        } catch (error) {
-            console.error("Failed to send Discord notification:", error);
-        }
+    try {
+      await axios.post(discordWebhookUrl, {
+        content: `${message} ${link}`,
+      });
+      console.log("Discord notification sent.");
+    } catch (error) {
+      console.error("Failed to send Discord notification:", error);
     }
-})().catch((e) => {
-    console.error(e.stack);
-    core.setFailed(e.message);
-});
+  } else {
+    console.log("No tickets available currently.");
+  }
+})();
