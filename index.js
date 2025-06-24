@@ -1,17 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = require("@actions/core");
-const webhook_1 = require("@slack/webhook");
-const axios_1 = require("axios");
+const axios = require("axios");
 const qs = require("querystring");
+
 (async () => {
-    var _a;
-    // Validate parameters
-    const [productId, scheduleId, seatId, webhookUrl] = [
+    // 從 GitHub Actions inputs 取得參數
+    const [productId, scheduleId, seatId, discordWebhookUrl] = [
         "product-id",
         "schedule-id",
         "seat-id",
-        "slack-incoming-webhook-url",
+        "discord-webhook-url",
     ].map((name) => {
         const value = core.getInput(name);
         if (!value) {
@@ -19,9 +18,11 @@ const qs = require("querystring");
         }
         return value;
     });
-    const message = (_a = core.getInput("message")) !== null && _a !== void 0 ? _a : "티켓사세요";
-    const webhook = new webhook_1.IncomingWebhook(webhookUrl);
-    const res = await axios_1.default({
+
+    const message = core.getInput("message") || "Melon Ticket available!";
+
+    // 呼叫 Melon API 取得票務狀態
+    const res = await axios({
         method: "POST",
         url: "https://ticket.melon.com/tktapi/product/seatStateInfo.json",
         params: {
@@ -35,15 +36,25 @@ const qs = require("querystring");
             selectedGradeVolume: 1,
         }),
     });
-    // tslint:disable-next-line
+
     console.log("Got response: ", res.data);
+
     if (res.data.chkResult) {
         const link = `http://ticket.melon.com/performance/index.htm?${qs.stringify({
             prodId: productId,
         })}`;
-        await webhook.send(`${message} ${link}`);
+
+        // 發送 Discord Webhook
+        try {
+            await axios.post(discordWebhookUrl, {
+                content: `${message} ${link}`,
+            });
+            console.log("Discord notification sent.");
+        } catch (error) {
+            console.error("Failed to send Discord notification:", error);
+        }
     }
 })().catch((e) => {
-    console.error(e.stack); // tslint:disable-line
+    console.error(e.stack);
     core.setFailed(e.message);
 });
