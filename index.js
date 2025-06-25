@@ -3,12 +3,11 @@ const axios = require("axios");
 const qs = require("querystring");
 
 (async () => {
-  // 從環境變數讀取輸入參數，GitHub Actions 會將 with: 參數自動轉成 INPUT_XXX
-  const productId = process.env.INPUT_PRODUCT_ID;
-  const scheduleId = process.env.INPUT_SCHEDULE_ID;
-  const seatId = process.env.INPUT_SEAT_ID;
-  const slackWebhookUrl = process.env.INPUT_SLACK_INCOMING_WEBHOOK_URL;
-  const message = process.env.INPUT_MESSAGE || "Melon Ticket available!";
+  const productId = process.env.PRODUCT_ID;
+  const scheduleId = process.env.SCHEDULE_ID;
+  const seatId = process.env.SEAT_ID;
+  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+  const message = process.env.MESSAGE || "Melon Ticket available!";
 
   if (!productId || !scheduleId || !seatId || !slackWebhookUrl) {
     throw new Error("請確認所有必要環境變數都有設定 (product-id, schedule-id, seat-id, slack-incoming-webhook-url)");
