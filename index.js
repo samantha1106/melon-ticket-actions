@@ -14,17 +14,23 @@ const qs = require("querystring");
   }
 
   const res = await axios({
-    method: "POST",
-    url: "https://ticket.melon.com/tktapi/product/seatStateInfo.json",
-    params: { v: "1" },
-    data: qs.stringify({
-      prodId: productId,
-      scheduleNo: scheduleId,
-      seatId,
-      volume: 1,
-      selectedGradeVolume: 1,
-    }),
-  });
+  method: "POST",
+  url: "https://ticket.melon.com/tktapi/product/seatStateInfo.json",
+  params: { v: "1" },
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Accept': '*/*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
+  data: qs.stringify({
+    prodId: productId,
+    scheduleNo: scheduleId,
+    seatId,
+    volume: 1,
+    selectedGradeVolume: 1,
+  }),
+});
 
   console.log("Got response: ", res.data);
 
