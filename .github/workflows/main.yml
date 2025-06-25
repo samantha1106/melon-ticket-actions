@@ -1,31 +1,22 @@
-name: melon-ticket-check
-
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '*/5 * * * *'  # 每30分鐘執行一次，你可以調整
-
+name: workflow
+on: push
 jobs:
-  check-ticket:
+  job:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
+      - uses: actions/checkout@v1
+      - name: Prepare
         run: npm ci
-
-      - name: Run Melon Ticket Checker
-        run: node index.js
+      - name: Lint
+        uses: mooyoul/tslint-actions@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: '*.ts'
+      - name: Build
+        run: npm run build
+      - name: Publish
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx semantic-release
         env:
-          PRODUCT_ID: ${{ secrets.PRODUCT_ID }}
-          SCHEDULE_ID: ${{ secrets.SCHEDULE_ID }}
-          SEAT_ID: ${{ secrets.SEAT_ID }}
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
