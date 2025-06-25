@@ -15,6 +15,6 @@ jobs:
         env:
           PRODUCT_ID: 211212
           SCHEDULE_ID: 100024
-          SEAT_ID: ALL
+          SEAT_ID: 25_163
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           MESSAGE: '🎫 <@samantha> 〈PHANTOM〉 6/27 19:30 有票啦！快搶！🔥'
