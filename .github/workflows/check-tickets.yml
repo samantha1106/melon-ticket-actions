@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Check Tickets
         uses: samantha1106/melon-ticket-actions@master
-        with:
-          product-id: 211212
-          schedule-id: 100024           # ← 請改成你查到的場次 ID
-          seat-id: ALL                  # 檢查所有區域
-          slack-incoming-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          message: '🎫 <@samantha> 〈PHANTOM〉 6/27 19:30 有票啦！快搶！🔥'
+        env:
+          PRODUCT_ID: 211212
+          SCHEDULE_ID: 100024
+          SEAT_ID: ALL
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MESSAGE: '🎫 <@samantha> 〈PHANTOM〉 6/27 19:30 有票啦！快搶！🔥'
