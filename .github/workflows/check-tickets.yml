@@ -2,19 +2,30 @@ name: Check Melon Tickets
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # 每 5 分鐘執行一次
-  workflow_dispatch:       # 也允許手動觸發
+    - cron: '*/15 * * * *'  # 每 15 分鐘跑一次
+  workflow_dispatch:
 
 jobs:
   check-tickets:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+
     steps:
-      - name: Check Tickets
-        uses: samantha1106/melon-ticket-actions@master
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Melon Ticket check script
         env:
-          PRODUCT_ID: 211212
-          SCHEDULE_ID: 100024
-          SEAT_ID: 1_0
+          PERFORMANCE_URL: 'https://tkglobal.melon.com/performance/index.htm?prodId=211212'
+          TARGET_DATE: '2025-06-27'
+          TARGET_TIME: '19:30'
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MESSAGE: '🎫 <@samantha> 〈PHANTOM〉 6/27 19:30 有票啦！快搶！🔥'
+          MESSAGE: '🎫 〈PHANTOM〉 6/27 19:30 有票啦！快搶！🔥'
+        run: node check_melon.js
