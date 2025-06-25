@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Check Tickets
-        uses: uses: samantha1106/melon-ticket-actions@main
+        uses: samantha1106/melon-ticket-actions@main
         with:
           product-id: 211212
           schedule-id: 100024           # ← 請改成你查到的場次 ID
