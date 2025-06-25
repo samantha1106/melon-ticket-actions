@@ -4,7 +4,7 @@
   "description": "Melon Ticket availability checker with Puppeteer",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node check_melon.js"
   },
   "dependencies": {
     "axios": "^1.4.0",
